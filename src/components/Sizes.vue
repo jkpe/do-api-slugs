@@ -127,7 +127,7 @@
           </b-table-column>
 
           <b-table-column field="memory" label="RAM" sortable>
-              {{ props.row.memory | mbToGb }} GB
+              {{ props.row.memory | mbToGib }} GiB
           </b-table-column>
 
           <b-table-column field="vcpus" label="CPU" sortable>
@@ -135,11 +135,11 @@
           </b-table-column>
 
           <b-table-column field="disk" label="Disk" sortable>
-              {{ props.row.disk }} GB
+              {{ props.row.disk }} GiB
           </b-table-column>
 
           <b-table-column field="transfer" label="Transfer" sortable>
-              {{ props.row.transfer }} TB
+              {{ props.row.transfer }} TiB
           </b-table-column>
 
           <b-table-column field="price_monthly" label="Price Monthly" sortable>
@@ -259,7 +259,7 @@ export default {
     }
   },
   filters: {
-    mbToGb: function (value) {
+    mbToGib: function (value) {
       return value / 1024
     }
   },
