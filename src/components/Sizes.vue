@@ -14,6 +14,102 @@
               </b-select>
             </div>
           </div>
+          <div class="level-item">
+            <div style="width: 150px;">
+              <label class="label">CPU (Min)</label>
+              <b-input
+                v-model.number="filterCpuMin"
+                type="number"
+                placeholder="Min"
+                min="0">
+              </b-input>
+            </div>
+          </div>
+          <div class="level-item">
+            <div style="width: 150px;">
+              <label class="label">CPU (Max)</label>
+              <b-input
+                v-model.number="filterCpuMax"
+                type="number"
+                placeholder="Max"
+                min="0">
+              </b-input>
+            </div>
+          </div>
+          <div class="level-item">
+            <div style="width: 150px;">
+              <label class="label">RAM (GB) Min</label>
+              <b-input
+                v-model.number="filterRamMin"
+                type="number"
+                placeholder="Min GB"
+                min="0"
+                step="0.1">
+              </b-input>
+            </div>
+          </div>
+          <div class="level-item">
+            <div style="width: 150px;">
+              <label class="label">RAM (GB) Max</label>
+              <b-input
+                v-model.number="filterRamMax"
+                type="number"
+                placeholder="Max GB"
+                min="0"
+                step="0.1">
+              </b-input>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="level mb-4">
+        <div class="level-left">
+          <div class="level-item">
+            <div style="width: 150px;">
+              <label class="label">Disk (GB) Min</label>
+              <b-input
+                v-model.number="filterDiskMin"
+                type="number"
+                placeholder="Min GB"
+                min="0">
+              </b-input>
+            </div>
+          </div>
+          <div class="level-item">
+            <div style="width: 150px;">
+              <label class="label">Disk (GB) Max</label>
+              <b-input
+                v-model.number="filterDiskMax"
+                type="number"
+                placeholder="Max GB"
+                min="0">
+              </b-input>
+            </div>
+          </div>
+          <div class="level-item">
+            <div style="width: 150px;">
+              <label class="label">Transfer (TB) Min</label>
+              <b-input
+                v-model.number="filterTransferMin"
+                type="number"
+                placeholder="Min TB"
+                min="0"
+                step="0.1">
+              </b-input>
+            </div>
+          </div>
+          <div class="level-item">
+            <div style="width: 150px;">
+              <label class="label">Transfer (TB) Max</label>
+              <b-input
+                v-model.number="filterTransferMax"
+                type="number"
+                placeholder="Max TB"
+                min="0"
+                step="0.1">
+              </b-input>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -89,7 +185,15 @@ export default {
       isLoading: true,
       isEmpty: false,
       errored: false,
-      selectedClass: ''
+      selectedClass: '',
+      filterCpuMin: null,
+      filterCpuMax: null,
+      filterRamMin: null,
+      filterRamMax: null,
+      filterDiskMin: null,
+      filterDiskMax: null,
+      filterTransferMin: null,
+      filterTransferMax: null
     }
   },
   computed: {
@@ -97,11 +201,48 @@ export default {
       if (this.isEmpty) return []
       if (!this.data.sizes) return []
 
-      if (!this.selectedClass) {
-        return this.data.sizes
+      let filtered = this.data.sizes
+
+      // Filter by class
+      if (this.selectedClass) {
+        filtered = filtered.filter(size => size.description === this.selectedClass)
       }
 
-      return this.data.sizes.filter(size => size.description === this.selectedClass)
+      // Filter by CPU count
+      if (this.filterCpuMin !== null && this.filterCpuMin !== '') {
+        filtered = filtered.filter(size => size.vcpus >= this.filterCpuMin)
+      }
+      if (this.filterCpuMax !== null && this.filterCpuMax !== '') {
+        filtered = filtered.filter(size => size.vcpus <= this.filterCpuMax)
+      }
+
+      // Filter by RAM (convert GB to MB for comparison)
+      if (this.filterRamMin !== null && this.filterRamMin !== '') {
+        const ramMinMB = this.filterRamMin * 1024
+        filtered = filtered.filter(size => size.memory >= ramMinMB)
+      }
+      if (this.filterRamMax !== null && this.filterRamMax !== '') {
+        const ramMaxMB = this.filterRamMax * 1024
+        filtered = filtered.filter(size => size.memory <= ramMaxMB)
+      }
+
+      // Filter by Disk
+      if (this.filterDiskMin !== null && this.filterDiskMin !== '') {
+        filtered = filtered.filter(size => size.disk >= this.filterDiskMin)
+      }
+      if (this.filterDiskMax !== null && this.filterDiskMax !== '') {
+        filtered = filtered.filter(size => size.disk <= this.filterDiskMax)
+      }
+
+      // Filter by Transfer
+      if (this.filterTransferMin !== null && this.filterTransferMin !== '') {
+        filtered = filtered.filter(size => size.transfer >= this.filterTransferMin)
+      }
+      if (this.filterTransferMax !== null && this.filterTransferMax !== '') {
+        filtered = filtered.filter(size => size.transfer <= this.filterTransferMax)
+      }
+
+      return filtered
     },
     classTypes () {
       if (!this.data.sizes) return []
